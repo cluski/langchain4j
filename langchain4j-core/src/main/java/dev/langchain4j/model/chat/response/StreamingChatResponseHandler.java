@@ -1,7 +1,5 @@
 package dev.langchain4j.model.chat.response;
 
-import static dev.langchain4j.internal.Utils.isNullOrEmpty;
-
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 
@@ -13,11 +11,7 @@ import dev.langchain4j.model.chat.StreamingChatLanguageModel;
  */
 public interface StreamingChatResponseHandler {
 
-    default void onPartialResponse(String reasoningContent, String content) {
-        if (!isNullOrEmpty(content)) {
-            this.onPartialResponse(content);
-        }
-    }
+    default void onReasoningResponse(String reasoningContent) {}
 
     /**
      * Invoked each time the model generates a partial response (usually a single token) in a textual response.

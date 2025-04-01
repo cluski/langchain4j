@@ -3,6 +3,7 @@ package dev.langchain4j.model.openai;
 import static dev.langchain4j.internal.Utils.copyIfNotNull;
 import static dev.langchain4j.internal.Utils.getOrDefault;
 import static dev.langchain4j.internal.Utils.isNotNullOrBlank;
+import static dev.langchain4j.internal.Utils.isNullOrEmpty;
 import static dev.langchain4j.model.ModelProvider.OPEN_AI;
 import static dev.langchain4j.model.openai.InternalOpenAiHelper.DEFAULT_OPENAI_URL;
 import static dev.langchain4j.model.openai.InternalOpenAiHelper.DEFAULT_USER_AGENT;
@@ -176,9 +177,13 @@ public class OpenAiStreamingChatModel implements StreamingChatLanguageModel, Tok
         }
 
         String content = delta.content();
+        if (!isNullOrEmpty(content)) {
+            handler.onPartialResponse(content);
+        }
+
         String reasoningContent = delta.reasoningContent();
-        if (isNotNullOrBlank(content) || isNotNullOrBlank(reasoningContent)) {
-            handler.onPartialResponse(reasoningContent, content);
+        if (isNotNullOrBlank(reasoningContent)) {
+            handler.onReasoningResponse(reasoningContent);
         }
     }
 

@@ -46,12 +46,14 @@ public interface StreamingChatLanguageModel {
         StreamingChatResponseHandler observingHandler = new StreamingChatResponseHandler() {
 
             @Override
-            public void onPartialResponse(final String reasoningContent, final String content) {
-                handler.onPartialResponse(reasoningContent, content);
+            public void onReasoningResponse(final String reasoningContent) {
+                handler.onReasoningResponse(reasoningContent);
             }
 
             @Override
-            public void onPartialResponse(String partialResponse) {}
+            public void onPartialResponse(String partialResponse) {
+                handler.onPartialResponse(partialResponse);
+            }
 
             @Override
             public void onCompleteResponse(ChatResponse completeResponse) {

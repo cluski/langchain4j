@@ -1,5 +1,7 @@
 package dev.langchain4j.model.openai.internal.chat;
 
+import static java.util.Collections.unmodifiableList;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,11 +9,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
 import java.util.List;
 import java.util.Objects;
-
-import static java.util.Collections.unmodifiableList;
 
 @JsonDeserialize(builder = Delta.Builder.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,16 +19,23 @@ public final class Delta {
 
     @JsonProperty
     private final Role role;
+
+    @JsonProperty
+    private final String reasoningContent;
+
     @JsonProperty
     private final String content;
+
     @JsonProperty
     private final List<ToolCall> toolCalls;
+
     @JsonProperty
     @Deprecated
     private final FunctionCall functionCall;
 
     public Delta(Builder builder) {
         this.role = builder.role;
+        this.reasoningContent = builder.reasoningContent;
         this.content = builder.content;
         this.toolCalls = builder.toolCalls;
         this.functionCall = builder.functionCall;
@@ -37,6 +43,10 @@ public final class Delta {
 
     public Role role() {
         return role;
+    }
+
+    public String reasoningContent() {
+        return reasoningContent;
     }
 
     public String content() {
@@ -55,12 +65,12 @@ public final class Delta {
     @Override
     public boolean equals(Object another) {
         if (this == another) return true;
-        return another instanceof Delta
-                && equalTo((Delta) another);
+        return another instanceof Delta && equalTo((Delta) another);
     }
 
     private boolean equalTo(Delta another) {
         return Objects.equals(role, another.role)
+                && Objects.equals(reasoningContent, another.reasoningContent)
                 && Objects.equals(content, another.content)
                 && Objects.equals(toolCalls, another.toolCalls)
                 && Objects.equals(functionCall, another.functionCall);
@@ -70,6 +80,7 @@ public final class Delta {
     public int hashCode() {
         int h = 5381;
         h += (h << 5) + Objects.hashCode(role);
+        h += (h << 5) + Objects.hashCode(reasoningContent);
         h += (h << 5) + Objects.hashCode(content);
         h += (h << 5) + Objects.hashCode(toolCalls);
         h += (h << 5) + Objects.hashCode(functionCall);
@@ -80,6 +91,7 @@ public final class Delta {
     public String toString() {
         return "Delta{"
                 + "role=" + role
+                + ", reasoningContent=" + reasoningContent
                 + ", content=" + content
                 + ", toolCalls=" + toolCalls
                 + ", functionCall=" + functionCall
@@ -96,13 +108,20 @@ public final class Delta {
     public static final class Builder {
 
         private Role role;
+        private String reasoningContent;
         private String content;
         private List<ToolCall> toolCalls;
+
         @Deprecated
         private FunctionCall functionCall;
 
         public Builder role(Role role) {
             this.role = role;
+            return this;
+        }
+
+        public Builder reasoningContent(String reasoningContent) {
+            this.reasoningContent = reasoningContent;
             return this;
         }
 
@@ -123,7 +142,6 @@ public final class Delta {
             this.functionCall = functionCall;
             return this;
         }
-
 
         public Delta build() {
             return new Delta(this);

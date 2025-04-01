@@ -1,5 +1,9 @@
 package dev.langchain4j.model.openai.internal.chat;
 
+import static dev.langchain4j.model.openai.internal.chat.Role.ASSISTANT;
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,13 +12,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
 import java.util.List;
 import java.util.Objects;
-
-import static dev.langchain4j.model.openai.internal.chat.Role.ASSISTANT;
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
 
 @JsonDeserialize(builder = AssistantMessage.Builder.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,19 +22,28 @@ public final class AssistantMessage implements Message {
 
     @JsonProperty
     private final Role role = ASSISTANT;
+
+    @JsonProperty
+    private final String reasoningContent;
+
     @JsonProperty
     private final String content;
+
     @JsonProperty
     private final String name;
+
     @JsonProperty
     private final List<ToolCall> toolCalls;
+
     @JsonProperty
     private final Boolean refusal;
+
     @JsonProperty
     @Deprecated
     private final FunctionCall functionCall;
 
     public AssistantMessage(Builder builder) {
+        this.reasoningContent = builder.reasoningContent;
         this.content = builder.content;
         this.name = builder.name;
         this.toolCalls = builder.toolCalls;
@@ -45,6 +53,10 @@ public final class AssistantMessage implements Message {
 
     public Role role() {
         return role;
+    }
+
+    public String reasoningContent() {
+        return reasoningContent;
     }
 
     public String content() {
@@ -71,12 +83,12 @@ public final class AssistantMessage implements Message {
     @Override
     public boolean equals(Object another) {
         if (this == another) return true;
-        return another instanceof AssistantMessage
-                && equalTo((AssistantMessage) another);
+        return another instanceof AssistantMessage && equalTo((AssistantMessage) another);
     }
 
     private boolean equalTo(AssistantMessage another) {
         return Objects.equals(role, another.role)
+                && Objects.equals(reasoningContent, another.reasoningContent)
                 && Objects.equals(content, another.content)
                 && Objects.equals(name, another.name)
                 && Objects.equals(toolCalls, another.toolCalls)
@@ -88,6 +100,7 @@ public final class AssistantMessage implements Message {
     public int hashCode() {
         int h = 5381;
         h += (h << 5) + Objects.hashCode(role);
+        h += (h << 5) + Objects.hashCode(reasoningContent);
         h += (h << 5) + Objects.hashCode(content);
         h += (h << 5) + Objects.hashCode(name);
         h += (h << 5) + Objects.hashCode(toolCalls);
@@ -100,6 +113,7 @@ public final class AssistantMessage implements Message {
     public String toString() {
         return "AssistantMessage{"
                 + "role=" + role
+                + ", reasoningContent=" + reasoningContent
                 + ", content=" + content
                 + ", name=" + name
                 + ", toolCalls=" + toolCalls
@@ -109,9 +123,7 @@ public final class AssistantMessage implements Message {
     }
 
     public static AssistantMessage from(String content) {
-        return AssistantMessage.builder()
-                .content(content)
-                .build();
+        return AssistantMessage.builder().content(content).build();
     }
 
     public static Builder builder() {
@@ -123,12 +135,19 @@ public final class AssistantMessage implements Message {
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static final class Builder {
 
+        private String reasoningContent;
         private String content;
         private String name;
         private List<ToolCall> toolCalls;
         private Boolean refusal;
+
         @Deprecated
         private FunctionCall functionCall;
+
+        public Builder reasoningContent(String reasoningContent) {
+            this.reasoningContent = reasoningContent;
+            return this;
+        }
 
         public Builder content(String content) {
             this.content = content;

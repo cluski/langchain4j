@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>langchain4j-open-ai</artifactId>
+    <version>1.0.0-beta2-reason</version>
     <name>LangChain4j :: Integration :: OpenAI</name>
 
     <licenses>
@@ -26,13 +27,13 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-core</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-http-client-jdk</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
         </dependency>
 
         <dependency>
@@ -62,7 +63,7 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-core</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
